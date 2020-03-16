@@ -5,30 +5,25 @@ from util import Stack, Queue  # These may come in handy
 
 
 class Graph:
-    """Represent a graph as a dictionary of vertices mapping labels to edges."""
+    """Represent a graph as a dictionary of vertices mapping labels to edges"""
 
     def __init__(self):
+        """Default constructor for this class"""
         self.vertices = {}
 
     def add_vertex(self, vertex_id):
-        """
-        Add a vertex to the graph.
-        """
+        """Add a vertex to the graph"""
         self.vertices[vertex_id] = set()
 
     def add_edge(self, v1, v2):
-        """
-        Add a directed edge to the graph.
-        """
+        """Add a directed edge to the graph"""
         if v1 in self.vertices and v2 in self.vertices:
             self.vertices[v1].add(v2)
         else:
             raise ValueError('Vertex does not exist')
 
     def add_undirected_edge(self, v1, v2):
-        """
-        Add a directed edge to the graph.
-        """
+        """Add a directed edge to the graph"""
         if v1 in self.vertices and v2 in self.vertices:
             self.vertices[v1].add(v2)
             self.vertices[v2].add(v1)
@@ -36,19 +31,14 @@ class Graph:
             raise ValueError('Vertex does not exist')
 
     def get_neighbors(self, vertex_id):
-        """
-        Get all neighbors (edges) of a vertex.
-        """
+        """Get all neighbors (edges) of a vertex"""
         if vertex_id in self.vertices:
             return self.vertices[vertex_id]
         else:
             raise ValueError('ERROR: Vertex does not exist')
 
     def bft(self, starting_vertex):
-        """
-        Print each vertex in breadth-first order
-        beginning from starting_vertex.
-        """
+        """Print each vertex in breadth-first order beginning from starting_vertex"""
         # Create a queue
         q = Queue()
         # Enqueue the starting vertex
@@ -70,10 +60,7 @@ class Graph:
                     q.enqueue(neighbor)
 
     def dft(self, starting_vertex):
-        """
-        Print each vertex in depth-first order
-        beginning from starting_vertex.
-        """
+        """Print each vertex in depth-first order beginning from starting_vertex"""
         # Create a stack
         s = Stack()
         # Push the starting vertex
@@ -95,12 +82,7 @@ class Graph:
                     s.push(neighbor)
 
     def dft_recursive(self, starting_vertex):
-        """
-        Print each vertex in depth-first order
-        beginning from starting_vertex.
-
-        This should be done using recursion.
-        """
+        """Print each vertex in depth-first order beginning from starting_vertex. This should be done using recursion"""
         # Check if the node has been visited
         # If not...
             # Mark it as visited
@@ -108,11 +90,7 @@ class Graph:
             # (Use a nested recursive function, or add a default arg (visited=). Read the gotchas)
 
     def bfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing the shortest path from
-        starting_vertex to destination_vertex in
-        breath-first order.
-        """
+        """Return a list containing the shortest path from starting_vertex to destination_vertex in breath-first order"""
         # Create a queue
         # Enqueue A PATH TO the starting vertex
         # Create a set to store visited vertices
@@ -129,21 +107,11 @@ class Graph:
                     # ENQUEUE THE COPY
 
     def dfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-        """
+        """Return a list containing a path from starting_vertex to destination_vertex in depth-first order"""
         pass  # TODO
 
-    def dfs_recursive(self, starting_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-
-        This should be done using recursion.
-        """
+    def dfs_recursive(self, starting_vertex, destination_vertex):
+        """Return a list containing a path from starting_vertex to destination_vertex in depth-first order. This should be done using recursion"""
         pass  # TODO
 
 
