@@ -104,19 +104,35 @@ class Graph:
     def bfs(self, starting_vertex, destination_vertex):
         """Return a list containing the shortest path from starting_vertex to destination_vertex in breath-first order"""
         # Create a queue
-        # Enqueue A PATH TO the starting vertex
+        q = Queue()
+        # Enqueue a path to the starting vertex
+        q.enqueue([starting_vertex])
         # Create a set to store visited vertices
+        visited = set()
         # While the queue is not empty...
-            # Dequeue the first PATH
-            # GRAB THE VERTEX FROM THE END OF THE PATH
+        while q.size() > 0:
+            # Dequeue the first path
+            path = q.dequeue()
+            # Grab the vertex from the end of the path
+            vertex = path[-1]
             # Check if it's been visited
             # If it hasn't been visited...
+            if vertex not in visited:
                 # Mark it as visited
-                # CHECK IF IT'S THE TARGET
-                    # IF SO, RETURN THE PATH
-                # Enqueue A PATH TO all of its neighbors
-                    # MAKE A COPY OF THE path
-                    # ENQUEUE THE COPY
+                visited.add(vertex)
+                # Check if it's the target
+                if vertex == destination_vertex:
+                    # If so, return the path
+                    return path
+                else:
+                    # Enqueue a path to all of its neighbors
+                    for neighbor in self.get_neighbors(vertex):
+                        # Make a copy of the path
+                        path_copy = path.copy()
+                        # Add the neighbor to the path
+                        path_copy.append(neighbor)
+                        # Enqueue the copy
+                        q.enqueue(path_copy)
 
     def dfs(self, starting_vertex, destination_vertex):
         """Return a list containing a path from starting_vertex to destination_vertex in depth-first order"""
@@ -179,7 +195,7 @@ if __name__ == '__main__':
         1, 2, 4, 6, 3, 5, 7
     '''
     graph.dft(1)
-    print('DFT (recursive): ', end=' ')
+    print('Depth-First Traversal (recursive): ', end=' ')
     graph.dft_recursive(1)
     print()
 
@@ -187,7 +203,7 @@ if __name__ == '__main__':
     Valid BFS path:
         [1, 2, 4, 6]
     '''
-    # print(f'BFS path: {graph.bfs(1, 6)}')
+    print(f'Breadth-First Search path: {graph.bfs(1, 6)}')
 
     '''
     Valid DFS paths:
