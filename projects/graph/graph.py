@@ -86,7 +86,7 @@ class Graph:
         print()
 
     def dft_recursive(self, starting_vertex, visited=None):
-        """Print each vertex in depth-first order beginning from starting_vertex. This should be done using recursion"""
+        """Print each vertex in depth-first order beginning from starting_vertex, using recursion"""
         # Initialize the default argument if necessary
         if visited is None:
             visited = set()
@@ -136,10 +136,24 @@ class Graph:
 
     def dfs(self, starting_vertex, destination_vertex):
         """Return a list containing a path from starting_vertex to destination_vertex in depth-first order"""
-        pass  # TODO
+        s = Stack()
+        s.push([starting_vertex])
+        visited = set()
+        while s.size() > 0:
+            path = s.pop()
+            vertex = path[-1]
+            if vertex not in visited:
+                visited.add(vertex)
+                if vertex == destination_vertex:
+                    return path
+                else:
+                    for neighbor in self.get_neighbors(vertex):
+                        path_copy = path.copy()
+                        path_copy.append(neighbor)
+                        s.push(path_copy)
 
     def dfs_recursive(self, starting_vertex, destination_vertex):
-        """Return a list containing a path from starting_vertex to destination_vertex in depth-first order. This should be done using recursion"""
+        """Return a list containing a path from starting_vertex to destination_vertex in depth-first order, using recursion"""
         pass  # TODO
 
 
@@ -210,5 +224,5 @@ if __name__ == '__main__':
         [1, 2, 4, 6]
         [1, 2, 4, 7, 6]
     '''
-    # print(f'DFS path (iterative): {graph.dfs(1, 6)}')
+    print(f'Depth-First Search path (iterative): {graph.dfs(1, 6)}')
     # print(f'DFS path (recursive): {graph.dfs_recursive(1, 6)}')
