@@ -82,6 +82,10 @@ class Ancestor:
                     earliest_ancestors.append(d[0])
             return min(earliest_ancestors)
 
+# Modify earliest_ancestor() method to store a path and then simply return last node in the path
+# BFS or DFS
+# Declare graph backwards, store length for each possible path, then determine longest path
+
 
 if __name__ == '__main__':
     ancestor_list = [(1, 3), (2, 3), (3, 6), (5, 6), (5, 7), (4, 5), (4, 8), (8, 9), (11, 8), (10, 1)]
