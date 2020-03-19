@@ -87,26 +87,28 @@ class SocialGraph:
         Returns a dictionary containing every user in that user's extended network with the shortest friendship path between them
         The KEY is the friend's ID and the VALUE is the path
         """
-        # BFS
+        visited = {}
+        for i in range(1, len(self.users) + 1):
+            connection = self.bfs(user_id, i)
+            if connection:
+                visited[i] = connection
+        return visited
+
+    def bfs(self, user_id, connection_id):
         q = Queue()
         q.enqueue([user_id])
-        visited = {}
+        visited = set()
         while q.size() > 0:
             network = q.dequeue()
             friend = network[-1]
             if friend not in visited:
-                visited[friend] = [user_id]
-                if friend == visited[friend][-1]:
-                    visited[friend]=network
+                visited.add(friend)
+                if friend == connection_id:
+                    return network
                 for connection in self.get_connections(friend):
-                    # if connection not in visited:
-                    #     visited[connection]=[user_id]
-                    # elif connection in visited:
-                    #     visited[connection].append(connection)
                     network_copy = network.copy()
                     network_copy.append(connection)
                     q.enqueue(network_copy)
-        return visited
 
     def get_connections(self, friend):
         if friend in self.friendships:
