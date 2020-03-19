@@ -117,10 +117,36 @@ class SocialGraph:
         else:
             raise ValueError(f'Friend {friend} does not exist')
 
+    def get_all_social_paths_guided_project(self, user_id):
+        # Create a queue
+        q = Queue()
+        # Enqueue a path to the starting user_id
+        q.enqueue([user_id])
+        visited = {}  # Note that this is a dictionary, not a set
+        # While the queue is not empty...
+        while q.size() > 0:
+            # Dequeue the first path
+            path = q.dequeue()
+            # Grab the last id from the path
+            current_id = path[-1]
+            # Check if it's been visited
+            # If not...
+            if current_id not in visited:
+                # Add it to visited along with the path
+                visited[current_id] = path
+                # Enqueue the path to each friend to the queue
+                for friend_id in self.friendships[current_id]:
+                    # Copy the path
+                    path_copy = path.copy()
+                    # Append each neighbor
+                    path_copy.append(friend_id)
+                    # Enqueue
+                    q.enqueue(path_copy)
+        return visited
 
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
     print(f'Friendships:\n{pprint.pformat(sg.friendships)}')
-    connections = sg.get_all_social_paths(1)
+    connections = sg.get_all_social_paths_guided_project(1)
     print(f'Connections:\n{pprint.pformat(connections)}')
