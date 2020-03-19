@@ -1,4 +1,5 @@
 import random
+import pprint
 
 
 class Queue():
@@ -120,6 +121,6 @@ class SocialGraph:
 if __name__ == '__main__':
     sg = SocialGraph()
     sg.populate_graph(10, 2)
-    print(f'Friendships: {sg.friendships}')
+    print(f'Friendships:\n{pprint.pformat(sg.friendships)}')
     connections = sg.get_all_social_paths(1)
-    print(f'Connections: {connections}')
+    print(f'Connections:\n{pprint.pformat(connections)}')
