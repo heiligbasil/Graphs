@@ -9,9 +9,9 @@ from world import World
 world = World()
 
 # You may uncomment the smaller graphs for development and testing purposes.
-map_file = "maps/test_line.txt"
+# map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
-# map_file = "maps/test_loop.txt"
+map_file = "maps/test_loop.txt"
 # map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
 
@@ -24,10 +24,33 @@ world.print_rooms()
 
 player = Player(world.starting_room)
 
-# FILL THIS OUT WITH DIRECTIONS TO WALK
+# === FILL THIS OUT WITH DIRECTIONS TO WALK ===
 # You are responsible for filling traversal_path with directions that, when walked in order, will visit every room on the map at least once
+# You may find the commands `player.current_room.id`, `player.current_room.get_exits()` and `player.travel(direction)` useful.
+# To solve this path, you'll want to construct your own traversal graph. Your starting graph should look something like this:
+# {0: {'n': '?', 's': '?', 'w': '?', 'e': '?'}}
 # You know you are done when you have exactly 500 entries (0-499) in your graph and no '?' in the adjacency dictionaries.
-# To do this, you will need to write a traversal algorithm that logs the path into traversal_path as it walks.
+# To do this, you will need to write a traversal algorithm that logs the path into `traversal_path` as it walks.
+# === HINTS ===
+# Start by writing an algorithm that picks a random unexplored direction from the player's current room, travels and logs that direction,
+# then loops. This should cause your player to walk a depth-first traversal. When you reach a dead-end (i.e. a room with no unexplored
+# paths), walk back to the nearest room that does contain an unexplored path. You can find the path to the shortest unexplored room by
+# using a breadth-first search for a room with a '?' for an exit. If you use the bfs code from the homework, you will need to make a few
+# modifications. Instead of searching for a target vertex, you are searching for an exit with a '?' as the value. If an exit has been
+# explored, you can put it in your BFS queue like normal. BFS will return the path as a list of room IDs. You will need to convert this
+# to a list of n/s/e/w directions before you can add it to your traversal path.
+
+# 1. Pick a random direction
+# 2. Walk in that direction
+# 3. Log that direction in the traversal graph
+# 4. Loop (DFT)
+# 5. If dead-end, walk to nearest unexplored path
+# 6. Search for '?' in a room instead of vertex (BFS)
+# 7. Translate room_id to direction
+# 8. Log that direction in the traversal graph
+
+# 3 functions? Central engine + DFT + BFS
+
 
 # traversal_path = ['n', 'n']
 traversal_path = []
