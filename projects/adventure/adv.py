@@ -3,6 +3,7 @@ from ast import literal_eval
 
 from player import Player
 from room import Room
+from util import Stack
 from world import World
 
 # Load world
@@ -23,6 +24,7 @@ world.load_graph(room_graph)
 world.print_rooms()
 
 player = Player(world.starting_room)
+
 
 # === FILL THIS OUT WITH DIRECTIONS TO WALK ===
 # You are responsible for filling traversal_path with directions that, when walked in order, will visit every room on the map at least once
@@ -51,9 +53,51 @@ player = Player(world.starting_room)
 
 # 3 functions? Central engine + DFT + BFS
 
-
-# traversal_path = ['n', 'n']
+traversal_graph = {}
 traversal_path = []
+
+
+def central():
+    # directions = ['n', 's', 'w', 'e']
+    while True:
+        exits = player.current_room.get_exits()
+        if player.current_room.id not in traversal_graph:
+            dictionary = {}
+            for an_exit in exits:
+                dictionary[an_exit] = '?'
+            traversal_graph[player.current_room.id]=dictionary
+        direction = get_random_direction()
+        print(direction, end=', ')
+        traversal_graph[player.current_room.id][direction] = player.current_room.get_room_in_direction(direction).id
+        traversal_path.append(direction)
+        player.travel(direction)
+
+
+def get_random_direction():
+    if '?' not in traversal_graph[player.current_room.id].values():
+        return None
+    while True:
+        direction = random.choice(list(traversal_graph[player.current_room.id]))
+        if traversal_graph[player.current_room.id][direction] == '?':
+            break
+    return direction
+
+
+def dft(starting_vertex):
+    s = Stack()
+    s.push(starting_vertex)
+    visited = set()
+    while s.size() > 0:
+        v = s.pop()
+        if v not in visited:
+            visited.add(v)
+            print(v)
+            for neighbor in self.get_neighbors(v):
+                s.push(neighbor)
+
+
+central()
+
 
 # TRAVERSAL TEST
 visited_rooms = set()
@@ -68,7 +112,7 @@ if len(visited_rooms) == len(room_graph):
     print(f"TESTS PASSED: {len(traversal_path)} moves, {len(visited_rooms)} rooms visited")
 else:
     print("TESTS FAILED: INCOMPLETE TRAVERSAL")
-    print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms")
+    print(f"{len(room_graph) - len(visited_rooms)} unvisited rooms (out of {len(room_graph)} total)")
 
 #######
 # UNCOMMENT TO WALK AROUND
