@@ -61,4 +61,5 @@ Note that in this sample, Users 3, 4 and 9 are not in User 1's extended social n
 > Real people's friends aren't random and probably run in the same circle.
 
 2. If you followed the hints for part 1, your `populate_graph()` will run in O(n^2) time. Refactor your code to run in O(n) time. Are there any tradeoffs that come with this implementation?
+> Can refactor to run in O(n) time. The linear solution is faster on a sparse graph, but will be significantly worse in a dense graph than the standard quadratic solution.
 
