@@ -2,7 +2,6 @@ import random
 from ast import literal_eval
 
 from player import Player
-from room import Room
 from util import Queue
 from world import World
 
@@ -24,6 +23,7 @@ world.load_graph(room_graph)
 world.print_rooms()
 
 player = Player(world.starting_room)
+
 
 # === FILL THIS OUT WITH DIRECTIONS TO WALK ===
 # You are responsible for filling traversal_path with directions that, when walked in order, will visit every room on the map at least once
@@ -52,94 +52,75 @@ player = Player(world.starting_room)
 
 # 3 functions? Central engine + DFT + BFS
 
-traversal_graph = {}
-traversal_path = []
-
 
 def central():
-    direction = 'n'
+    """The central command point for the completely automatic maze traversal"""
+    # The initial starting direction, chosen randomly
+    direction = random.choice(player.current_room.get_exits())
     while True:
-        exits = player.current_room.get_exits()
         if player.current_room.id not in traversal_graph:
+            # Add the current room with exit information into the custom traversal list
             dictionary = {}
-            for an_exit in exits:
+            for an_exit in player.current_room.get_exits():
                 dictionary[an_exit] = '?'
             traversal_graph[player.current_room.id] = dictionary
-        if not available_exits():
-            id_list = bfs(player.current_room.id)
-            if id_list is None:
+        graph_id = traversal_graph[player.current_room.id]
+        if '?' not in traversal_graph[player.current_room.id].values():
+            # The current room has no more unexplored exits, so use BFS to find the closest unexplored room
+            room_ids = bfs(player.current_room.id)
+            if room_ids is None:
+                # All of the rooms have been explored!
                 break
-            directions = ['n', 's', 'e', 'w']
-            for id in id_list:
-                for d in directions:
-                    in_direction = player.current_room.get_room_in_direction(d)
-                    if in_direction:
-                        if in_direction.id == id:
-                            print(direction, end=', ')
-                            print(player.current_room.id, end=', ')
-                            print(player.current_room.get_room_in_direction(d).id, end='| ')
-                            traversal_graph[player.current_room.id][d] = player.current_room.get_room_in_direction(d).id
-                            traversal_path.append(d)
-                            player.travel(d)
-                            break
+            for an_id in room_ids:
+                for a_direction in player.current_room.get_exits():
+                    if player.current_room.get_room_in_direction(a_direction).id == an_id:
+                        walk_to_room(a_direction)
+                        break
             direction = get_random_direction()
-        elif (direction in traversal_graph[player.current_room.id] and traversal_graph[player.current_room.id][
-            direction] != '?') or direction not in traversal_graph[player.current_room.id]:
+        elif (direction in graph_id and graph_id[direction] != '?') or direction not in graph_id:
+            # Get a new direction once the currently used direction is no longer valid
             direction = get_random_direction()
         # Add the entries and actually walk to the specified room
-        print(direction, end=', ')
-        print(player.current_room.id, end=', ')
-        print(player.current_room.get_room_in_direction(direction).id, end='| ')
-        traversal_graph[player.current_room.id][direction] = player.current_room.get_room_in_direction(direction).id
-        traversal_path.append(direction)
-        player.travel(direction)
-
-
-def available_exits():
-    if '?' not in traversal_graph[player.current_room.id].values():
-        return False
-    else:
-        return True
+        walk_to_room(direction)
 
 
 def get_random_direction():
+    """Allow the computer to pick a direction"""
+    graph_id = traversal_graph[player.current_room.id]
     while True:
-        direction = random.choice(list(traversal_graph[player.current_room.id]))
-        if traversal_graph[player.current_room.id][direction] == '?':
+        direction = random.choice(list(graph_id))
+        if graph_id[direction] == '?':
             break
     return direction
 
 
 def bfs(start):
+    """Breadth-First Search to find the path to the closest unexplored room"""
     q = Queue()
     q.enqueue([start])
     visited = set()
     while q.size() > 0:
         path = q.dequeue()
-        id = path[-1]
-        if id not in visited:
-            visited.add(id)
-            if id == '?':
+        room = path[-1]
+        if room not in visited:
+            visited.add(room)
+            if room == '?':
                 return path[1:-1]
-            for neighbor in traversal_graph[id].values():
+            for r in traversal_graph[room].values():
                 path_copy = path.copy()
-                path_copy.append(neighbor)
+                path_copy.append(r)
                 q.enqueue(path_copy)
 
 
-# def dft(starting_vertex):
-#     s = Stack()
-#     s.push(starting_vertex)
-#     visited = set()
-#     while s.size() > 0:
-#         v = s.pop()
-#         if v not in visited:
-#             visited.add(v)
-#             print(v)
-#             for neighbor in self.get_neighbors(v):
-#                 s.push(neighbor)
+def walk_to_room(direction):
+    """Update the traversal list, add the direction to the path list, and then actually walk to the room"""
+    traversal_graph[player.current_room.id][direction] = player.current_room.get_room_in_direction(direction).id
+    traversal_path.append(direction)
+    player.travel(direction)
 
 
+traversal_graph = {}
+traversal_path = []
 central()
 
 # TRAVERSAL TEST
