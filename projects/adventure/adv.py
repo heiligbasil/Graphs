@@ -3,7 +3,7 @@ from ast import literal_eval
 
 from player import Player
 from room import Room
-from util import Stack
+from util import Queue
 from world import World
 
 # Load world
@@ -12,8 +12,8 @@ world = World()
 # You may uncomment the smaller graphs for development and testing purposes.
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
-map_file = "maps/test_loop.txt"
-# map_file = "maps/test_loop_fork.txt"
+# map_file = "maps/test_loop.txt"
+map_file = "maps/test_loop_fork.txt"
 # map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
@@ -24,7 +24,6 @@ world.load_graph(room_graph)
 world.print_rooms()
 
 player = Player(world.starting_room)
-
 
 # === FILL THIS OUT WITH DIRECTIONS TO WALK ===
 # You are responsible for filling traversal_path with directions that, when walked in order, will visit every room on the map at least once
@@ -58,24 +57,37 @@ traversal_path = []
 
 
 def central():
-    # directions = ['n', 's', 'w', 'e']
+    direction = 'n'
     while True:
         exits = player.current_room.get_exits()
         if player.current_room.id not in traversal_graph:
             dictionary = {}
             for an_exit in exits:
                 dictionary[an_exit] = '?'
-            traversal_graph[player.current_room.id]=dictionary
-        direction = get_random_direction()
+            traversal_graph[player.current_room.id] = dictionary
+        if not available_exits():
+            caught = bfs(player.current_room.id)
+            break
+        elif (direction in traversal_graph[player.current_room.id] and traversal_graph[player.current_room.id][
+            direction] != '?') or direction not in traversal_graph[player.current_room.id]:
+            direction = get_random_direction()
+        # Add the entries and actually walk to the specified room
         print(direction, end=', ')
+        print(player.current_room.id, end=', ')
+        print(player.current_room.get_room_in_direction(direction).id, end='| ')
         traversal_graph[player.current_room.id][direction] = player.current_room.get_room_in_direction(direction).id
         traversal_path.append(direction)
         player.travel(direction)
 
 
-def get_random_direction():
+def available_exits():
     if '?' not in traversal_graph[player.current_room.id].values():
-        return None
+        return False
+    else:
+        return True
+
+
+def get_random_direction():
     while True:
         direction = random.choice(list(traversal_graph[player.current_room.id]))
         if traversal_graph[player.current_room.id][direction] == '?':
@@ -83,21 +95,37 @@ def get_random_direction():
     return direction
 
 
-def dft(starting_vertex):
-    s = Stack()
-    s.push(starting_vertex)
+def bfs(start):
+    q = Queue()
+    q.enqueue([start])
     visited = set()
-    while s.size() > 0:
-        v = s.pop()
-        if v not in visited:
-            visited.add(v)
-            print(v)
-            for neighbor in self.get_neighbors(v):
-                s.push(neighbor)
+    while q.size() > 0:
+        path = q.dequeue()
+        id = path[-1]
+        if id not in visited:
+            visited.add(id)
+            if id == '?':
+                return path
+            for neighbor in traversal_graph[id].values():
+                path_copy = path.copy()
+                path_copy.append(neighbor)
+                q.enqueue(path_copy)
+
+
+# def dft(starting_vertex):
+#     s = Stack()
+#     s.push(starting_vertex)
+#     visited = set()
+#     while s.size() > 0:
+#         v = s.pop()
+#         if v not in visited:
+#             visited.add(v)
+#             print(v)
+#             for neighbor in self.get_neighbors(v):
+#                 s.push(neighbor)
 
 
 central()
-
 
 # TRAVERSAL TEST
 visited_rooms = set()
