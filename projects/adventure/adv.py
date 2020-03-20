@@ -13,8 +13,8 @@ world = World()
 # map_file = "maps/test_line.txt"
 # map_file = "maps/test_cross.txt"
 # map_file = "maps/test_loop.txt"
-map_file = "maps/test_loop_fork.txt"
-# map_file = "maps/main_maze.txt"
+# map_file = "maps/test_loop_fork.txt"
+map_file = "maps/main_maze.txt"
 
 # Loads the map into a dictionary
 room_graph = literal_eval(open(map_file, "r").read())
@@ -66,8 +66,23 @@ def central():
                 dictionary[an_exit] = '?'
             traversal_graph[player.current_room.id] = dictionary
         if not available_exits():
-            caught = bfs(player.current_room.id)
-            break
+            id_list = bfs(player.current_room.id)
+            if id_list is None:
+                break
+            directions = ['n', 's', 'e', 'w']
+            for id in id_list:
+                for d in directions:
+                    in_direction = player.current_room.get_room_in_direction(d)
+                    if in_direction:
+                        if in_direction.id == id:
+                            print(direction, end=', ')
+                            print(player.current_room.id, end=', ')
+                            print(player.current_room.get_room_in_direction(d).id, end='| ')
+                            traversal_graph[player.current_room.id][d] = player.current_room.get_room_in_direction(d).id
+                            traversal_path.append(d)
+                            player.travel(d)
+                            break
+            direction = get_random_direction()
         elif (direction in traversal_graph[player.current_room.id] and traversal_graph[player.current_room.id][
             direction] != '?') or direction not in traversal_graph[player.current_room.id]:
             direction = get_random_direction()
@@ -105,7 +120,7 @@ def bfs(start):
         if id not in visited:
             visited.add(id)
             if id == '?':
-                return path
+                return path[1:-1]
             for neighbor in traversal_graph[id].values():
                 path_copy = path.copy()
                 path_copy.append(neighbor)
