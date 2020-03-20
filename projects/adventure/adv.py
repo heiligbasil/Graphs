@@ -58,14 +58,11 @@ def central():
     # The initial starting direction, chosen randomly
     direction = random.choice(player.current_room.get_exits())
     while True:
-        if player.current_room.id not in traversal_graph:
-            # Add the current room with exit information into the custom traversal list
-            dictionary = {}
-            for an_exit in player.current_room.get_exits():
-                dictionary[an_exit] = '?'
-            traversal_graph[player.current_room.id] = dictionary
+        # Add the current room to the traversal graph
+        add_to_graph()
+        # Extract the dictionary entry for the current room from the traversal graph
         graph_id = traversal_graph[player.current_room.id]
-        if '?' not in traversal_graph[player.current_room.id].values():
+        if '?' not in graph_id.values():
             # The current room has no more unexplored exits, so use BFS to find the closest unexplored room
             room_ids = bfs(player.current_room.id)
             if room_ids is None:
@@ -82,6 +79,15 @@ def central():
             direction = get_random_direction()
         # Add the entries and actually walk to the specified room
         walk_to_room(direction)
+
+
+def add_to_graph():
+    """Add the current room and its exits to the traversal graph dictionary"""
+    if player.current_room.id not in traversal_graph:
+        dictionary = {}
+        for an_exit in player.current_room.get_exits():
+            dictionary[an_exit] = '?'
+        traversal_graph[player.current_room.id] = dictionary
 
 
 def get_random_direction():
@@ -114,9 +120,13 @@ def bfs(start):
 
 def walk_to_room(direction):
     """Update the traversal list, add the direction to the path list, and then actually walk to the room"""
+    room_id = player.current_room.id
+    reverse_direction = {'n': 's', 's': 'n', 'e': 'w', 'w': 'e'}[direction]
     traversal_graph[player.current_room.id][direction] = player.current_room.get_room_in_direction(direction).id
     traversal_path.append(direction)
     player.travel(direction)
+    add_to_graph()
+    traversal_graph[player.current_room.id][reverse_direction] = room_id
 
 
 traversal_graph = {}
